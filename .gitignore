@@ -2,5 +2,5 @@
 *.ram.nl
 *.dbg
 *.wch
-obj/
+obj/*
 map.txt

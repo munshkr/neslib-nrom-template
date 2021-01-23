@@ -5,8 +5,7 @@ set srcdir="src"
 set objdir="obj"
 set config="%srcdir%\nrom128.cfg"
 
-rmdir /Q /S %objdir%
-mkdir %objdir%
+del /Q %objdir%\*
 del %rom%
 
 ca65 %srcdir%\crt0.s -o %objdir%\crt0.o

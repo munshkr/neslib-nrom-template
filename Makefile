@@ -1,8 +1,10 @@
 .PHONY: run clean
 
-rom := hello.nes
 objdir := obj
 srcdir := src
+objlist := crt0 main
+
+rom := hello.nes
 config := $(srcdir)/nrom128.cfg
 
 CC65 := cc65
@@ -16,20 +18,19 @@ run: $(rom)
 
 # Rules for PRG ROM
 
-map.txt $(rom): $(objdir)/crt0.o $(objdir)/main.o $(wildcard $(srcdir)/*)
-	$(LD65) -o $(rom) -m map.txt -C $(config) $(objdir)/crt0.o $(objdir)/main.o $(srcdir)/nes.lib
+objlistfiles = $(foreach o,$(objlist),$(objdir)/$(o).o)
 
-$(objdir)/crt0.o: $(srcdir)/crt0.s
-	mkdir -p $(objdir)
+map.txt $(rom): $(objlistfiles) $(wildcard $(srcdir)/*)
+	$(LD65) -o $(rom) -m map.txt -C $(config) $(objlistfiles) $(srcdir)/nes.lib
+
+$(objdir)/%.o: $(srcdir)/%.s
 	$(CA65) $(CFLAGS65) $< -o $@
 
-$(objdir)/main.o: $(objdir)/main.s
-	mkdir -p $(objdir)
+$(objdir)/%.o: $(objdir)/%.s
 	$(CA65) $(CFLAGS65) $< -o $@
 
-$(objdir)/main.s: $(srcdir)/main.c
-	mkdir -p $(objdir)
+$(objdir)/%.s: $(srcdir)/%.c
 	$(CC65) $(CFLAGS65) $< -o $@
 
 clean:
-	-rm -rf $(objdir)/
+	@rm -rf $(objdir)/*
